@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 flex flex-col h-[70vh]">
+    <!-- Header -->
+    <div class="bg-blue-600 p-4 text-white flex items-center justify-between shadow-md z-10">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+          <i class="fas fa-robot text-lg"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg leading-tight">MediBot</h3>
+          <p class="text-blue-100 text-xs">AI Health Assistant</p>
+        </div>
+      </div>
+      <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse border-2 border-green-500/50"></div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="flex-1 bg-slate-50 p-6 overflow-y-auto space-y-4" id="chatHistory">
+      {% if not chat_history %}
+      <div class="text-center text-slate-400 mt-10">
+        <i class="fas fa-comments text-4xl mb-3 opacity-50"></i>
+        <p>Start a conversation with MediBot.</p>
+        <p class="text-xs">Ask about general health tips or symptoms.</p>
+      </div>
+      {% endif %}
+
+      {% for msg in chat_history %}
+      <div class="flex {{ 'justify-end' if msg['sender'] == 'user' else 'justify-start' }}">
+        <div
+          class="max-w-[80%] rounded-2xl px-5 py-3 shadow-sm text-sm {{ 'bg-blue-600 text-white rounded-br-none' if msg['sender'] == 'user' else 'bg-white text-slate-700 rounded-bl-none border border-slate-100' }}">
+          {{ msg['text'] }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-4 bg-white border-t border-slate-100">
+      <form method="POST" class="flex gap-2">
+        <input type="text" name="user_input" id="userInput"
+          class="flex-1 bg-slate-100 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 rounded-xl px-4 py-3 text-slate-700 placeholder-slate-400 text-sm transition"
+          placeholder="Type your health question..." autocomplete="off" required>
+        <button type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-xl flex items-center justify-center transition shadow-md hover:shadow-lg">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-scroll chat to bottom
+  window.onload = function () {
+    var chatHistory = document.getElementById('chatHistory');
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    // Focus input
+    document.getElementById('userInput').focus();
+  }
+</script>
+{% endblock %}

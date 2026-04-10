@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center p-6 bg-slate-50">
+    <div class="max-w-2xl w-full text-center space-y-8 animate-up">
+        <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-brand-blue-100 text-brand-blue-600 mb-4">
+            <i class="fas fa-rocket text-4xl"></i>
+        </div>
+        
+        <div class="space-y-4">
+            <h1 class="text-5xl font-outfit font-extrabold text-brand-dark tracking-tight">
+                Exciting Things are <span class="text-brand-blue-600">Coming Soon</span>
+            </h1>
+            <p class="text-xl text-slate-500 leading-relaxed max-w-lg mx-auto">
+                We're currently developing this premium feature to give you the best possible healthcare experience. Stay tuned for updates!
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+            <a href="/" class="px-8 py-3 rounded-xl bg-brand-blue-600 text-white font-bold btn-premium flex items-center gap-2">
+                <i class="fas fa-arrow-left text-sm"></i>
+                Return Home
+            </a>
+            <button class="px-8 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+                Notify Me
+            </button>
+        </div>
+
+        <div class="pt-12 grid grid-cols-2 lg:grid-cols-4 gap-6 grayscale opacity-40">
+            <div class="flex flex-col items-center gap-2">
+                <i class="fas fa-user-shield text-3xl"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Enhanced Privacy</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fas fa-chart-line text-3xl"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Global Stats</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fas fa-robot text-3xl"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Smart Diagnostics</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fas fa-mobile-alt text-3xl"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Mobile Ready</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

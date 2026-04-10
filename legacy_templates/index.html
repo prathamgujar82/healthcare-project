@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-12">
+  <!-- Hero Section -->
+  <div class="text-center space-y-4 py-12">
+    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+      Smart <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">Health
+        Prediction</span>
+    </h1>
+    <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+      Identify potential health conditions by analyzing your symptoms with our advanced AI model.
+      Fast, private, and accurate.
+    </p>
+  </div>
+
+  <!-- Main Prediction Form -->
+  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+    <div class="p-8">
+      <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+        <i class="fas fa-stethoscope text-blue-500"></i> Check Symptoms
+      </h2>
+
+      <form action="/predict" method="POST" id="predictForm">
+        <div class="mb-6 relative">
+          <label class="block text-sm font-medium text-slate-700 mb-2">Select Symptoms</label>
+
+          <!-- Hidden Input for Form Submission -->
+          <input type="hidden" name="symptoms" id="symptomsInput">
+
+          <!-- Selected Tags Container -->
+          <div id="selectedTags"
+            class="flex flex-wrap gap-2 mb-3 p-2 min-h-[42px] border border-slate-200 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition bg-slate-50">
+            <span class="text-slate-400 text-sm self-center ml-2" id="placeholderText">Search and add symptoms...</span>
+            <input type="text" id="searchInput" class="flex-grow bg-transparent outline-none text-sm min-w-[120px] p-1"
+              autocomplete="off">
+          </div>
+
+          <!-- Dropdown List -->
+          <div id="dropdownList"
+            class="absolute z-10 w-full bg-white max-h-60 overflow-y-auto border border-slate-200 rounded-lg shadow-lg hidden mt-1">
+            {% for symptom in symptoms_list %}
+            <div class="px-4 py-2 hover:bg-blue-50 cursor-pointer text-slate-700 text-sm transition symptom-option"
+              data-value="{{ symptom }}">
+              {{ symptom | replace('_', ' ') | title }}
+            </div>
+            {% endfor %}
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Type to search. Click to add. Select multiple symptoms for better
+            accuracy.</p>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-xl shadow-md transform transition hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2">
+          <span class="fas fa-search-plus"></span> Predict Condition
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  {% if predicted_disease %}
+  <div id="resultSection" class="max-w-4xl mx-auto animate-fade-in-up">
+
+    <!-- Diagnosis Card -->
+    <div class="bg-white rounded-2xl shadow-xl border-l-4 border-blue-600 mb-8 overflow-hidden">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold tracking-widest text-blue-600 uppercase">Diagnosis</h3>
+          <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">AI Prediction</span>
+        </div>
+        <h2 class="text-4xl font-bold text-slate-900 mb-2">{{ predicted_disease }}</h2>
+        <button
+          class="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline flex items-center gap-1 mt-2"
+          onclick="document.getElementById('detailsConfig').scrollIntoView({behavior: 'smooth'})">
+          View detailed recommendations <i class="fas fa-arrow-down"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Details Tabs -->
+    <div id="detailsConfig" class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+      <!-- Tabs Header -->
+      <div class="flex flex-wrap border-b border-slate-200 bg-slate-50" id="tabsHeader">
+        <button onclick="switchTab('description')"
+          class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-blue-600 border-b-2 border-blue-600 hover:bg-white transition flex items-center justify-center gap-2 active-tab"
+          data-tab="description">
+          <i class="fas fa-info-circle"></i> Overview
+        </button>
+        <button onclick="switchTab('precautions')"
+          class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-white transition flex items-center justify-center gap-2"
+          data-tab="precautions">
+          <i class="fas fa-shield-alt"></i> Precautions
+        </button>
+        <button onclick="switchTab('medications')"
+          class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-white transition flex items-center justify-center gap-2"
+          data-tab="medications">
+          <i class="fas fa-pills"></i> Medications
+        </button>
+        <button onclick="switchTab('workout')"
+          class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-white transition flex items-center justify-center gap-2"
+          data-tab="workout">
+          <i class="fas fa-running"></i> Workout
+        </button>
+        <button onclick="switchTab('diets')"
+          class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-white transition flex items-center justify-center gap-2"
+          data-tab="diets">
+          <i class="fas fa-apple-alt"></i> Diet
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="p-8 min-h-[300px]">
+
+        <!-- Description -->
+        <div id="description" class="tab-content block animate-fade-in">
+          <h3 class="text-xl font-bold text-slate-800 mb-4">About the Condition</h3>
+          <p class="text-slate-600 leading-relaxed text-lg">{{ dis_des }}</p>
+        </div>
+
+        <!-- Precautions -->
+        <div id="precautions" class="tab-content hidden animate-fade-in">
+          <h3 class="text-xl font-bold text-slate-800 mb-4">Recommended Precautions</h3>
+          <ul class="space-y-3">
+            {% for i in my_precautions %}
+            <li class="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg text-yellow-800 border-l-4 border-yellow-400">
+              <i class="fas fa-exclamation-triangle mt-1"></i>
+              <span class="font-medium capitalize">{{ i }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Medications -->
+        <div id="medications" class="tab-content hidden animate-fade-in">
+          <h3 class="text-xl font-bold text-slate-800 mb-4">Possible Medications</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for i in medications %}
+            <div
+              class="flex items-center gap-3 p-4 bg-red-50 rounded-xl text-red-700 border border-red-100 shadow-sm hover:shadow transition-shadow">
+              <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-red-500 shadow-sm">
+                <i class="fas fa-capsules"></i>
+              </div>
+              <span class="font-semibold">{{ i }}</span>
+            </div>
+            {% endfor %}
+          </div>
+          <p class="text-xs text-slate-400 mt-4 italic">* Please consult a doctor before taking any medication.</p>
+        </div>
+
+        <!-- Workout -->
+        <div id="workout" class="tab-content hidden animate-fade-in">
+          <h3 class="text-xl font-bold text-slate-800 mb-4">Recommended Exercises</h3>
+          <ul class="space-y-3">
+            {% for i in workout %}
+            <li class="flex items-center gap-3 p-3 bg-green-50 rounded-lg text-green-800 hover:bg-green-100 transition">
+              <i class="fas fa-check-circle text-green-600"></i>
+              <span class="capitalize">{{ i }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Diets -->
+        <div id="diets" class="tab-content hidden animate-fade-in">
+          <h3 class="text-xl font-bold text-slate-800 mb-4">Dietary Recommendations</h3>
+          <ul class="space-y-3">
+            {% for i in my_diet %}
+            <li class="flex items-center gap-3 p-3 bg-lime-50 rounded-lg text-lime-800 hover:bg-lime-100 transition">
+              <i class="fas fa-utensils text-lime-600"></i>
+              <span class="capitalize">{{ i }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-indigo-900 p-6 text-center">
+        <p class="text-white text-sm mb-4">Detailed medical report generated.</p>
+        <a href="/report/{{ session.get('user_id', 1) }}"
+          class="inline-flex items-center gap-2 bg-white text-indigo-900 font-bold py-2 px-6 rounded-full hover:bg-indigo-50 transition">
+          <i class="fas fa-file-download"></i> Download Report (PDF)
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- JavaScript for Tabs & Multiselect -->
+<script>
+  // Tab Switching Logic
+  function switchTab(tabName) {
+    // Hide all contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.add('hidden');
+      content.classList.remove('block');
+    });
+
+    // Remove active class from buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'active-tab');
+      btn.classList.add('text-slate-500', 'hover:text-slate-700');
+    });
+
+    // Show selected content
+    document.getElementById(tabName).classList.remove('hidden');
+    document.getElementById(tabName).classList.add('block');
+
+    // Highlight button
+    const activeBtn = document.querySelector(`button[data-tab="${tabName}"]`);
+    activeBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'active-tab');
+    activeBtn.classList.remove('text-slate-500', 'hover:text-slate-700');
+  }
+
+  // Scroll to result on load if needed
+  {% if scroll_to_result %}
+  setTimeout(() => {
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+  {% endif %}
+
+  // Multiselect Logic
+  const searchInput = document.getElementById('searchInput');
+  const dropdownList = document.getElementById('dropdownList');
+  const selectedTagsContainer = document.getElementById('selectedTags');
+  const symptomsInput = document.getElementById('symptomsInput');
+  const placeholderText = document.getElementById('placeholderText');
+  const options = document.querySelectorAll('.symptom-option');
+
+  let selectedSymptoms = [];
+
+  // Filter options
+  searchInput.addEventListener('input', (e) => {
+    const value = e.target.value.toLowerCase();
+    let visibleCount = 0;
+
+    options.forEach(option => {
+      const text = option.textContent.toLowerCase().trim();
+      if (text.includes(value) && !selectedSymptoms.includes(option.dataset.value)) {
+        option.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        option.classList.add('hidden');
+      }
+    });
+
+    if (visibleCount > 0) {
+      dropdownList.classList.remove('hidden');
+    } else {
+      dropdownList.classList.add('hidden');
+    }
+  });
+
+  // Show dropdown on focus
+  searchInput.addEventListener('focus', () => {
+    dropdownList.classList.remove('hidden');
+  });
+
+  // Hide dropdown on blur (delayed)
+  document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !dropdownList.contains(e.target)) {
+      dropdownList.classList.add('hidden');
+    }
+  });
+
+  // Select Option
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      const value = option.dataset.value;
+      const text = option.textContent.trim();
+      addSymptom(value, text);
+      searchInput.value = '';
+      dropdownList.classList.add('hidden');
+      // searchInput.focus(); // Keep focus
+
+      // Reset options visibility
+      options.forEach(opt => opt.classList.remove('hidden'));
+    });
+  });
+
+  function addSymptom(value, text) {
+    if (selectedSymptoms.includes(value)) return;
+
+    selectedSymptoms.push(value);
+    updateHiddenInput();
+
+    const tag = document.createElement('div');
+    tag.className = 'bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 animate-fade-in';
+    tag.innerHTML = `
+            ${text}
+            <span class="cursor-pointer hover:text-blue-900" onclick="removeSymptom('${value}', this)"><i class="fas fa-times"></i></span>
+        `;
+
+    selectedTagsContainer.insertBefore(tag, searchInput);
+    placeholderText.classList.add('hidden');
+  }
+
+  // Expose remove function globally
+  window.removeSymptom = function (value, element) {
+    selectedSymptoms = selectedSymptoms.filter(s => s !== value);
+    updateHiddenInput();
+    element.parentElement.remove();
+
+    if (selectedSymptoms.length === 0) {
+      placeholderText.classList.remove('hidden');
+    }
+  }
+
+  function updateHiddenInput() {
+    symptomsInput.value = selectedSymptoms.join(',');
+  }
+</script>
+
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+{% endblock %}

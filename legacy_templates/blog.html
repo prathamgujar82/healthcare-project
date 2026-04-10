@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12 px-4">
+  <h1 class="text-4xl font-bold text-slate-900 mb-8 text-center">Health Blog</h1>
+
+  <div class="grid gap-8">
+    <!-- Article 1 -->
+    <article class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition border border-slate-100">
+      <div class="md:flex">
+        <div class="md:w-1/3 bg-slate-200 h-48 md:h-auto flex items-center justify-center">
+          <i class="fas fa-image text-slate-400 text-4xl"></i>
+        </div>
+        <div class="p-8 md:w-2/3">
+          <div class="uppercase tracking-wide text-sm text-blue-500 font-semibold">Health Tips</div>
+          <a href="#" class="block mt-1 text-xl leading-tight font-bold text-slate-900 hover:underline">Understanding
+            Medical AI</a>
+          <p class="mt-2 text-slate-600">Artificial intelligence is revolutionizing healthcare. Learn how predictive
+            models can assist in early diagnosis and better health outcomes...</p>
+          <div class="mt-4 flex items-center">
+            <span class="text-slate-500 text-sm">Jan 26, 2024 &bull; 5 min read</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Article 2 -->
+    <article class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition border border-slate-100">
+      <div class="md:flex">
+        <div class="md:w-1/3 bg-slate-200 h-48 md:h-auto flex items-center justify-center">
+          <i class="fas fa-heartbeat text-slate-400 text-4xl"></i>
+        </div>
+        <div class="p-8 md:w-2/3">
+          <div class="uppercase tracking-wide text-sm text-green-500 font-semibold">Wellness</div>
+          <a href="#" class="block mt-1 text-xl leading-tight font-bold text-slate-900 hover:underline">10 Tips for a
+            Healthy Lifestyle</a>
+          <p class="mt-2 text-slate-600">Small changes can make a big difference. Discover simple habits to improve your
+            physical and mental well-being starting today...</p>
+          <div class="mt-4 flex items-center">
+            <span class="text-slate-500 text-sm">Jan 20, 2024 &bull; 3 min read</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+<nav class="bg-blue-700 py-4 shadow mb-8">
+  <div class="container mx-auto flex items-center justify-between px-4">
+    <a class="flex items-center gap-2 text-white text-xl font-bold" href="/dashboard">
+      <i class="fas fa-heartbeat"></i>
+      <span>MedAI+</span>
+    </a>
+    <div class="flex gap-6 items-center">
+      <a href="/dashboard" class="text-white hover:text-blue-200 font-semibold">Dashboard</a>
+      <a href="/predict" class="text-white hover:text-blue-200 font-semibold">Predict</a>
+      <a href="/history" class="text-white hover:text-blue-200 font-semibold">History</a>
+      <a href="/reports" class="text-white hover:text-blue-200 font-semibold">Reports</a>
+      <a href="/image-check" class="text-white hover:text-blue-200 font-semibold">Image Check</a>
+      {% if session.username %}
+        <span class="text-blue-200 font-semibold">{{ session.username }}</span>
+        <a href="/logout" class="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-100 font-semibold transition">Logout</a>
+      {% else %}
+        <a href="/login" class="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-100 font-semibold transition">Login</a>
+        <a href="/register" class="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-100 font-semibold transition">Register</a>
+      {% endif %}
+    </div>
+  </div>
+</nav> 

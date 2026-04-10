@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-2">
+      <i class="fas fa-tachometer-alt text-blue-600"></i> Dashboard
+    </h1>
+    <span class="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+      Welcome, {{ session.username if session.get('username') else 'Guest' }}
+    </span>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Total Predictions -->
+    <div
+      class="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition">
+      <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl shadow-sm">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div>
+        <div class="text-3xl font-bold text-slate-800">{{ total_predictions }}</div>
+        <div class="text-slate-500 text-sm font-medium">Predictions</div>
+      </div>
+    </div>
+
+    <!-- Common Symptoms -->
+    <div
+      class="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition">
+      <div
+        class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-2xl shadow-sm">
+        <i class="fas fa-notes-medical"></i>
+      </div>
+      <div class="overflow-hidden">
+        <div class="text-lg font-bold text-slate-800">Symptoms</div>
+        <div class="text-slate-500 text-xs truncate" title="{{ common_symptoms|join(', ') }}">
+          {{ common_symptoms[:2]|join(', ') }}...
+        </div>
+      </div>
+    </div>
+
+    <!-- Predicted Diseases -->
+    <div
+      class="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition">
+      <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-2xl shadow-sm">
+        <i class="fas fa-virus"></i>
+      </div>
+      <div class="overflow-hidden">
+        <div class="text-lg font-bold text-slate-800">Diseases</div>
+        <div class="text-slate-500 text-xs truncate" title="{{ common_diseases|join(', ') }}">
+          {{ common_diseases[:2]|join(', ') }}...
+        </div>
+      </div>
+    </div>
+
+    <!-- User Status -->
+    <div
+      class="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition">
+      <div
+        class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 text-2xl shadow-sm">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div>
+        <div class="text-lg font-bold text-slate-800 truncate max-w-[120px]">{{ session.username if
+          session.get('username') else 'Guest' }}</div>
+        <div class="text-slate-500 text-xs text-green-600 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8">
+      <h5 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+        <i class="fas fa-chart-bar text-slate-400"></i> Disease Frequency
+      </h5>
+      <div class="relative h-64 w-full">
+        <canvas id="diseaseChart"></canvas>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8">
+      <h5 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+        <i class="fas fa-chart-pie text-slate-400"></i> Distribution
+      </h5>
+      <div class="relative h-64 w-full flex justify-center">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const diseaseCounts = {{ disease_counts| tojson | safe }};
+
+  // Bar Chart
+  const ctx = document.getElementById('diseaseChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(diseaseCounts),
+      datasets: [{
+        label: 'Predictions',
+        data: Object.values(diseaseCounts),
+        backgroundColor: '#3b82f6',
+        borderRadius: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { borderDash: [2, 4], color: '#f1f5f9' }
+        },
+        x: {
+          grid: { display: false }
+        }
+      }
+    }
+  });
+
+  // Pie Chart
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(diseaseCounts),
+      datasets: [{
+        data: Object.values(diseaseCounts),
+        backgroundColor: [
+          '#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'
+        ],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'right', labels: { usePointStyle: true, pointStyle: 'circle' } }
+      }
+    }
+  });
+</script>
+{% endblock %}

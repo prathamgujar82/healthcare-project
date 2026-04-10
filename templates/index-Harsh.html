@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedAI+ Health Center</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #10b981;
+      --secondary-dark: #059669;
+      --light: #f3f4f6;
+      --dark: #1f2937;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+l
+    .brand-icon {
+      margin-right: 8px;
+      font-size: 1.8rem;
+    }
+
+    .navbar-dark .navbar-nav .nav-link {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin: 0 2px;
+    }
+
+    .navbar-dark .navbar-nav .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .navbar-dark .navbar-nav .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+
+    .page-title {
+      color: var(--primary-dark);
+      font-weight: 700;
+      margin: 2rem 0;
+    }
+
+    .main-form {
+      background: linear-gradient(135deg, var(--dark), #0a1016cc);
+      color: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin-bottom: 3rem;
+    }
+
+    .form-control {
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.25rem rgba(37, 235, 235, 0.25);
+      border-color: var(--primary);
+    }
+
+    .search-box {
+      margin-bottom: 1rem;
+    }
+
+    .predict-btn {
+      background: linear-gradient(135deg, var(--danger), #b91c1c);
+      border: none;
+      padding: 1rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .predict-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .results-section {
+      padding: 2rem 0;
+    }
+
+    .result-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin: 2rem 0;
+    }
+
+    .result-btn {
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-disease { background-color: #f97316; }
+    .btn-description { background-color: #0ea5e9; }
+    .btn-precaution { background-color: #8b5cf6; }
+    .btn-medications { background-color: #ef4444; }
+    .btn-workouts { background-color: #22c55e; }
+    .btn-diets { background-color: #eab308; }
+
+    .btn-disease:hover { background-color: #ea580c; }
+    .btn-description:hover { background-color: #0284c7; }
+    .btn-precaution:hover { background-color: #7c3aed; }
+    .btn-medications:hover { background-color: #dc2626; }
+    .btn-workouts:hover { background-color: #16a34a; }
+    .btn-diets:hover { background-color: #ca8a04; }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      border-bottom: none;
+    }
+
+    .modal-content {
+      border-radius: 1rem;
+      overflow: hidden;
+      border: none;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      font-size: 1.05rem;
+    }
+
+    .modal-body ul {
+      padding-left: 1.5rem;
+    }
+
+    .modal-body li {
+      margin-bottom: 0.5rem;
+    }
+    
+    /* New styles for checkbox symptoms */
+    .symptoms-container {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    
+    .form-check {
+      margin: 0.25rem 0;
+    }
+    
+    .form-check-input:checked + .form-check-label {
+      color: var(--info);
+      font-weight: 500;
+    }
+    
+    /* New styles for detailed result section */
+    .detailed-results {
+      background-color: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin-bottom: 3rem;
+    }
+    
+    .result-box {
+      background-color: #e8f4f8;
+      border-left: 5px solid var(--primary);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.5rem;
+    }
+    
+    .probability-bar {
+      height: 24px;
+      margin-bottom: 1rem;
+    }
+    
+    .symptom-badge {
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      background-color: #e2e8f0;
+      color: var(--dark);
+      font-weight: 500;
+    }
+    
+    .alert-medical {
+      background-color: #fef2f2;
+      border-color: #fee2e2;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      color: #b91c1c;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .result-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .result-btn {
+        width: 80%;
+      }
+    }
+
+    /* Theme button styles */
+.theme-buttons {
+  display: flex;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2rem;
+  padding: 0.3rem;
+  margin-right: 1rem;
+}
+
+.theme-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 0 0.2rem;
+  transition: all 0.3s ease;
+  border: none;
+  background: transparent;
+}
+
+.theme-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.theme-btn.active {
+  background: white;
+  color: var(--primary);
+}
+
+/* Login/Register button styles */
+.btn-outline-light {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+  transform: translateY(-2px);
+}
+
+.btn-light {
+  background: white;
+  color: var(--primary-dark);
+  transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+  background: #f8f9fa;
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* Theme transition and dark mode styles */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-dark {
+  background-color: #1d1e20;
+  color: #f3f4f6;
+}
+
+.theme-dark .navbar {
+  background: linear-gradient(135deg, #181819, #363739);
+}
+
+.theme-dark .main-form {
+  background: linear-gradient(135deg, #222224, #242528);
+}
+
+.theme-dark .detailed-results {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.theme-dark .result-box {
+  background-color: #111827;
+  border-left: 5px solid var(--primary);
+}
+
+.theme-dark .symptom-badge {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+/* Classic theme improved color patterns - Green version */
+.theme-classic .navbar {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.theme-classic {
+  background-color: #f0fdf4;
+  color: #4b5563;
+}
+.theme-classic .main-form {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+.theme-classic .predict-btn {
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
+.theme-classic .detailed-results {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+}
+.theme-classic .result-box {
+  background-color: #ecfdf5;
+  border-left: 5px solid #10b981;
+}
+.theme-classic .symptom-badge {
+  background-color: #d1fae5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+.theme-classic .page-title {
+  color: #047857;
+}
+.theme-classic .btn-primary {
+  background-color: #10b981;
+  border-color: #059669;
+}
+.theme-classic .btn-primary:hover {
+  background-color: #059669;
+  border-color: #047857;
+}
+.theme-classic .result-btn {
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+.theme-classic .modal-header {
+  background: linear-gradient(135deg, #047857, #10b981);
+}
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-heartbeat brand-icon"></i>
+        MedAI+
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/image-check">Image Check</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/medibot">MediBot</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">Report & Analysis</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <!-- Theme Toggle Buttons -->
+          <div class="theme-buttons me-3">
+            <button class="btn btn-sm theme-btn" id="lightTheme" title="Light Theme">
+              <i class="fas fa-sun"></i>
+            </button>
+            <button class="btn btn-sm theme-btn" id="darkTheme" title="Dark Theme">
+              <i class="fas fa-moon"></i>
+            </button>
+            <button class="btn btn-sm theme-btn" id="classicTheme" title="Classic Theme">
+              <i class="fas fa-adjust"></i>
+            </button>
+          </div>
+          <!-- Login/Register Buttons -->
+
+<a href="/login" class="btn btn-outline-light btn-sm me-2">Login</a>
+          <a href="/register" class="btn btn-light btn-sm">Register</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1 class="text-center page-title">AI-Powered Health Assessment Center</h1>
+    
+    <!-- Main Form Section with Checkboxes -->
+    <div class="main-form">
+      <div class="card-header bg-transparent border-0 mb-3">
+        <h5 class="mb-0 text-white">
+          <i class="fas fa-clipboard-list me-2"></i>Select Your Symptoms
+        </h5>
+      </div>
+      
+      <form action="/predict" method="post">
+        <div class="search-box">
+          <input type="text" id="searchSymptoms" class="form-control" placeholder="Search symptoms...">
+        </div>
+        
+        <div class="symptoms-container">
+          <div id="symptomsCheckboxes" class="row">
+            <!-- Checkboxes will be populated here dynamically -->
+          </div>
+        </div>
+
+        {% if message %}
+        <div class="alert alert-info mt-3">
+          <i class="fas fa-info-circle me-2"></i>{{ message }}
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn predict-btn w-100 mt-4">
+          <i class="fas fa-stethoscope me-2"></i>Analyze Symptoms
+        </button>
+      </form>
+    </div>
+
+    {% if predicted_disease %}
+    <!-- New Detailed Results Section -->
+    <div class="detailed-results">
+      <h2 class="text-center mb-4">
+        <i class="fas fa-laptop-medical me-2"></i>Detailed Diagnosis Results
+      </h2>
+      
+      <div class="result-box">
+        <h3 class="mb-3">Primary Diagnosis: <strong>{{ predicted_disease }}</strong></h3>
+        <p>Based on the symptoms you selected, our AI system predicts that you may have <strong>{{ predicted_disease }}</strong>.</p>
+        
+        <div class="alert alert-medical">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Medical Disclaimer:</strong> This prediction is based on machine learning and should not replace professional medical advice. Please consult a healthcare professional for proper diagnosis and treatment.
+        </div>
+      </div>
+      
+      <!-- Top Predictions Section (Mockup) -->
+      <h4 class="mt-4 mb-3">
+        <i class="fas fa-chart-bar me-2"></i>Diagnosis Confidence
+      </h4>
+      <div class="mb-4">
+        <!-- Primary prediction -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span>{{ predicted_disease }}</span>
+            <span>85%</span>
+          </div>
+          <div class="progress probability-bar">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 85%" 
+                aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        
+        <!-- Secondary predictions (placeholder) -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span>Alternative Diagnosis 1</span>
+            <span>12%</span>
+          </div>
+          <div class="progress probability-bar">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 12%" 
+                aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span>Alternative Diagnosis 2</span>
+            <span>3%</span>
+          </div>
+          <div class="progress probability-bar">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 3%" 
+                aria-valuenow="3" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Selected Symptoms Section -->
+      <h4 class="mt-4 mb-3">
+        <i class="fas fa-clipboard-check me-2"></i>Identified Symptoms
+      </h4>
+      <div class="mb-4">
+        <div id="selectedSymptomsList">
+          <!-- This will be populated via JavaScript with the selected symptoms -->
+          <span class="symptom-badge"><i class="fas fa-check-circle me-1"></i>symptom 1</span>
+          <span class="symptom-badge"><i class="fas fa-check-circle me-1"></i>symptom 2</span>
+          <span class="symptom-badge"><i class="fas fa-check-circle me-1"></i>symptom 3</span>
+        </div>
+      </div>
+      
+      <div class="text-center mt-4">
+        <a href="/" class="btn btn-outline-primary me-2">
+          <i class="fas fa-redo me-1"></i>Check Different Symptoms
+        </a>
+        <a href="#medical-actions" class="btn btn-primary">
+          <i class="fas fa-arrow-down me-1"></i>View Recommendations
+        </a>
+      </div>
+    </div>
+    
+    <!-- Results Section with Action Buttons -->
+    <div class="results-section" id="medical-actions">
+      <h2 class="text-center page-title">
+        <i class="fas fa-laptop-medical me-2"></i>Medical Recommendations
+      </h2>
+      
+      <div class="result-buttons">
+        <button class="result-btn btn-disease" data-bs-toggle="modal" data-bs-target="#diseaseModal">
+          <i class="fas fa-viruses"></i> Disease
+        </button>
+        <button class="result-btn btn-description" data-bs-toggle="modal" data-bs-target="#descriptionModal">
+          <i class="fas fa-info-circle"></i> Description
+        </button>
+        <button class="result-btn btn-precaution" data-bs-toggle="modal" data-bs-target="#precautionModal">
+          <i class="fas fa-shield-alt"></i> Precaution
+        </button>
+        <button class="result-btn btn-medications" data-bs-toggle="modal" data-bs-target="#medicationsModal">
+          <i class="fas fa-pills"></i> Medications
+        </button>
+        <button class="result-btn btn-workouts" data-bs-toggle="modal" data-bs-target="#workoutsModal">
+          <i class="fas fa-running"></i> Workouts
+        </button>
+        <button class="result-btn btn-diets" data-bs-toggle="modal" data-bs-target="#dietsModal">
+          <i class="fas fa-apple-alt"></i> Diet
+        </button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Modals -->
+  <!-- Disease Modal -->
+  <div class="modal fade" id="diseaseModal" tabindex="-1" aria-labelledby="diseaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="diseaseModalLabel">
+            <i class="fas fa-viruses me-2"></i>Predicted Condition
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fs-5">{{ predicted_disease }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description Modal -->
+  <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="descriptionModalLabel">
+            <i class="fas fa-info-circle me-2"></i>Condition Description
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{ dis_des }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Precaution Modal -->
+  <div class="modal fade" id="precautionModal" tabindex="-1" aria-labelledby="precautionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="precautionModalLabel">
+            <i class="fas fa-shield-alt me-2"></i>Recommended Precautions
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            {% for i in my_precautions %}
+              <li>{{ i }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medications Modal -->
+  <div class="modal fade" id="medicationsModal" tabindex="-1" aria-labelledby="medicationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="medicationsModalLabel">
+            <i class="fas fa-pills me-2"></i>Recommended Medications
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            {% for i in medications %}
+              <li>{{ i }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workouts Modal -->
+  <div class="modal fade" id="workoutsModal" tabindex="-1" aria-labelledby="workoutsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="workoutsModalLabel">
+            <i class="fas fa-running me-2"></i>Recommended Physical Activities
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            {% for i in workout %}
+              <li>{{ i }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diets Modal -->
+  <div class="modal fade" id="dietsModal" tabindex="-1" aria-labelledby="dietsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dietsModalLabel">
+            <i class="fas fa-apple-alt me-2"></i>Recommended Diet Plan
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            {% for i in my_diet %}
+              <li>{{ i }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  
+  <script>
+    // Symptom data from your symptoms_dict
+    const symptoms = [
+      'itching', 'skin_rash', 'nodal_skin_eruptions', 'continuous_sneezing', 'shivering', 
+      'chills', 'joint_pain', 'stomach_pain', 'acidity', 'ulcers_on_tongue', 
+      'muscle_wasting', 'vomiting', 'burning_micturition', 'spotting_ urination', 'fatigue', 
+      'weight_gain', 'anxiety', 'cold_hands_and_feets', 'mood_swings', 'weight_loss', 
+      'restlessness', 'lethargy', 'patches_in_throat', 'irregular_sugar_level', 'cough', 
+      'high_fever', 'sunken_eyes', 'breathlessness', 'sweating', 'dehydration', 
+      'indigestion', 'headache', 'yellowish_skin', 'dark_urine', 'nausea', 
+      'loss_of_appetite', 'pain_behind_the_eyes', 'back_pain', 'constipation', 'abdominal_pain', 
+      'diarrhoea', 'mild_fever', 'yellow_urine', 'yellowing_of_eyes', 'acute_liver_failure', 
+      'fluid_overload', 'swelling_of_stomach', 'swelled_lymph_nodes', 'malaise', 
+      'blurred_and_distorted_vision', 'phlegm', 'throat_irritation', 'redness_of_eyes', 
+      'sinus_pressure', 'runny_nose', 'congestion', 'chest_pain', 'weakness_in_limbs', 
+      'fast_heart_rate', 'pain_during_bowel_movements', 'pain_in_anal_region', 'bloody_stool', 
+      'irritation_in_anus', 'neck_pain', 'dizziness', 'cramps', 'bruising', 
+      'obesity', 'swollen_legs', 'swollen_blood_vessels', 'puffy_face_and_eyes', 
+      'enlarged_thyroid', 'brittle_nails', 'swollen_extremeties', 'excessive_hunger', 
+      'extra_marital_contacts', 'drying_and_tingling_lips', 'slurred_speech', 'knee_pain', 
+      'hip_joint_pain', 'muscle_weakness', 'stiff_neck', 'swelling_joints', 
+      'movement_stiffness', 'spinning_movements', 'loss_of_balance', 'unsteadiness', 
+      'weakness_of_one_body_side', 'loss_of_smell', 'bladder_discomfort', 'foul_smell_of urine', 
+      'continuous_feel_of_urine', 'passage_of_gases', 'internal_itching', 'toxic_look_(typhos)', 
+      'depression', 'irritability', 'muscle_pain', 'altered_sensorium', 'red_spots_over_body', 
+      'belly_pain', 'abnormal_menstruation', 'dischromic _patches', 'watering_from_eyes', 
+      'increased_appetite', 'polyuria', 'family_history', 'mucoid_sputum', 'rusty_sputum', 
+      'lack_of_concentration', 'visual_disturbances', 'receiving_blood_transfusion', 
+      'receiving_unsterile_injections', 'coma', 'stomach_bleeding', 'distention_of_abdomen', 
+      'history_of_alcohol_consumption', 'fluid_overload.1', 'blood_in_sputum', 
+      'prominent_veins_on_calf', 'palpitations', 'painful_walking', 'pus_filled_pimples', 
+      'blackheads', 'scurring', 'skin_peeling', 'silver_like_dusting', 'small_dents_in_nails', 
+      'inflammatory_nails', 'blister', 'red_sore_around_nose', 'yellow_crust_ooze'
+    ];
+
+    // Function to populate checkboxes
+    function populateSymptoms() {
+      const symptomsContainer = document.getElementById('symptomsCheckboxes');
+      
+      symptoms.forEach((symptom, index) => {
+        // Create column for each symptom (3 per row)
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-2 symptom-item';
+        
+        // Format the symptom name for display
+        const displayName = symptom.replace(/_/g, ' ');
+        
+        col.innerHTML = `
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="symptoms" value="${symptom}" id="symptom${index}">
+            <label class="form-check-label" for="symptom${index}">
+              ${displayName}
+            </label>
+          </div>
+        `;
+        
+        symptomsContainer.appendChild(col);
+      });
+    }
+
+    // Initialize symptoms checkboxes
+    document.addEventListener('DOMContentLoaded', function() {
+      populateSymptoms();
+      
+      // Get the selected symptoms for results page
+      if (document.getElementById('selectedSymptomsList')) {
+        const checkboxes = document.querySelectorAll('input[name="symptoms"]:checked');
+        const selectedSymptomsList = document.getElementById('selectedSymptomsList');
+        
+        // Clear any placeholder content
+        selectedSymptomsList.innerHTML = '';
+        
+        // If we have checked symptoms, add them to the results
+        if (checkboxes.length > 0) {
+          checkboxes.forEach(checkbox => {
+            const symptomName = checkbox.value.replace(/_/g, ' ');
+            const badge = document.createElement('span');
+            badge.className = 'symptom-badge';
+            badge.innerHTML = `<i class="fas fa-check-circle me-1"></i>${symptomName}`;
+            selectedSymptomsList.appendChild(badge);
+          });
+        } else {
+          // If form was submitted without checkboxes
+          const userSymptoms = (window.location.search.match(/symptoms=([^&]+)/g) || [])
+            .map(s => s.replace('symptoms=', ''))
+            .map(s => decodeURIComponent(s).replace(/_/g, ' '));
+          
+          if (userSymptoms.length > 0) {
+            userSymptoms.forEach(symptom => {
+              const badge = document.createElement('span');
+              badge.className = 'symptom-badge';
+              badge.innerHTML = `<i class="fas fa-check-circle me-1"></i>${symptom}`;
+              selectedSymptomsList.appendChild(badge);
+            });
+          }
+        }
+      }
+    });
+
+    // Search functionality
+    document.getElementById('searchSymptoms').addEventListener('keyup', function() {
+      const searchText = this.value.toLowerCase();
+      const symptomItems = document.querySelectorAll('.symptom-item');
+      
+      symptomItems.forEach(item => {
+        const symptomText = item.textContent.toLowerCase();
+        if (symptomText.includes(searchText)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+
+    // Theme switching functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Theme buttons
+  const lightButton = document.getElementById('lightTheme');
+  const darkButton = document.getElementById('darkTheme');
+  const classicButton = document.getElementById('classicTheme');
+  
+  // Set initial theme (you can use localStorage to remember user preference)
+  const savedTheme = localStorage.getItem('medAiTheme') || 'light';
+  setTheme(savedTheme);
+  
+  // Light theme
+  lightButton.addEventListener('click', function() {
+    setTheme('light');
+    localStorage.setItem('medAiTheme', 'light');
+  });
+  
+  // Dark theme
+  darkButton.addEventListener('click', function() {
+    setTheme('dark');
+    localStorage.setItem('medAiTheme', 'dark');
+  });
+  
+  // Classic theme
+  classicButton.addEventListener('click', function() {
+    setTheme('classic');
+    localStorage.setItem('medAiTheme', 'classic');
+  });
+  
+  // Theme setting function
+  function setTheme(theme) {
+    // Remove all existing theme classes
+    document.body.classList.remove('theme-light', 'theme-dark', 'theme-classic');
+    
+    // Set active button
+    [lightButton, darkButton, classicButton].forEach(btn => btn.classList.remove('active'));
+    
+    // Apply selected theme
+    if (theme === 'dark') {
+      document.body.classList.add('theme-dark');
+      darkButton.classList.add('active');
+      document.documentElement.style.setProperty('--primary', '#3b82f6');
+      document.documentElement.style.setProperty('--primary-dark', '#2563eb');
+      document.documentElement.style.setProperty('--secondary', '#10b981');
+      document.documentElement.style.setProperty('--light', '#1f2937');
+      document.documentElement.style.setProperty('--dark', '#f3f4f6');
+    } 
+    else if (theme === 'classic') {
+      document.body.classList.add('theme-classic');
+      classicButton.classList.add('active');
+      document.documentElement.style.setProperty('--primary', '#10b981');
+      document.documentElement.style.setProperty('--primary-dark', '#047857');
+      document.documentElement.style.setProperty('--secondary', '#34d399');
+      document.documentElement.style.setProperty('--light', '#f0fdf4');
+      document.documentElement.style.setProperty('--dark', '#4b5563');
+    }
+    else {
+      // Light theme (default)
+      document.body.classList.add('theme-light');
+      lightButton.classList.add('active');
+      document.documentElement.style.setProperty('--primary', '#2563eb');
+      document.documentElement.style.setProperty('--primary-dark', '#1e40af');
+      document.documentElement.style.setProperty('--secondary', '#10b981');
+      document.documentElement.style.setProperty('--light', '#f3f4f6');
+      document.documentElement.style.setProperty('--dark', '#1f2937');
+    }
+  }
+});
+  </script>
+</body>
+</html>

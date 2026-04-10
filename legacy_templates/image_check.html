@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8">
+  <div class="text-center">
+    <h1 class="text-3xl font-bold text-slate-800 mb-2">Medical Image Analysis</h1>
+    <p class="text-slate-500">Upload a clear image of the affected area for a preliminary AI assessment.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+    <div class="p-8">
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+
+        <div
+          class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer relative group">
+          <input type="file" name="image" id="image" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            accept="image/*" required onchange="previewImage(this)">
+
+          <div id="uploadPlaceholder" class="space-y-2">
+            <div
+              class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
+              <i class="fas fa-cloud-upload-alt text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-slate-900">Click to upload or drag and drop</h3>
+            <p class="text-sm text-slate-500">SVG, PNG, JPG or GIF (max. 10MB)</p>
+          </div>
+
+          <div id="imagePreview" class="hidden">
+            <img id="previewHelper" class="max-h-64 mx-auto rounded-lg shadow-md" src="" alt="Preview">
+            <p class="text-sm text-blue-600 mt-2 font-medium">Click to change image</p>
+          </div>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+          <i class="fas fa-microscope"></i> Analyze Image
+        </button>
+      </form>
+    </div>
+
+    {% if result %}
+    <div class="bg-blue-600 p-6 text-white text-center animate-fade-in">
+      <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="text-xl font-bold mb-1">Analysis Complete</h3>
+      <p class="opacity-90">{{ result }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-yellow-700">
+          This feature is for demonstration purposes only. The results should not be considered as a definitive medical
+          diagnosis.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById('previewHelper').src = e.target.result;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreview').classList.remove('hidden');
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+{% endblock %}

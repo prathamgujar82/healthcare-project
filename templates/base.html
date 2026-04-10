@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MedAI+ | Clinical Assessment System{% endblock %}</title>
+    <!-- Premium Typography: Inter for UI, Playfair Display for Clinical Elegance -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'clinical-navy': '#0F172A',
+                        'clinical-blue': '#2563EB',
+                        'clinical-slate': '#475569',
+                        'surface-gray': '#F8FAFC',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            --accent-blur: blur(40px);
+        }
+        body {
+            background-color: #FFFFFF;
+            color: #0F172A;
+            -webkit-font-smoothing: antialiased;
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #2563EB;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .btn-clinical {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-clinical:active {
+            transform: scale(0.98);
+        }
+        .card-clinical {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        .card-clinical:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        @keyframes subtle-fade-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-subtle { animation: subtle-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Custom Scrollbar for a cleaner UI */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Professional Navbar -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Brand -->
+            <a href="/" class="flex items-center gap-3 active:scale-95 transition-transform">
+                <div class="w-10 h-10 bg-clinical-navy rounded-xl flex items-center justify-center shadow-lg shadow-slate-200">
+                    <i class="fas fa-notes-medical text-white text-lg"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-extrabold text-xl tracking-tight text-clinical-navy">MedAI<span class="text-clinical-blue">+</span></span>
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 -mt-1">Clinical Pro</span>
+                </div>
+            </a>
+
+            <!-- Navigation -->
+            <div class="hidden md:flex items-center gap-10">
+                <a href="/" class="nav-link text-sm font-semibold text-clinical-navy">Assessment</a>
+                <a href="/image-check" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Dermatology AI</a>
+                <a href="/medibot" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">MediBot</a>
+                <a href="/reports" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Clinical Reports</a>
+            </div>
+
+            <!-- CTA -->
+            <div class="flex items-center gap-4">
+                <a href="/login" class="hidden sm:block text-sm font-bold text-slate-500 hover:text-clinical-navy transition">Sign In</a>
+                <a href="/register" class="bg-clinical-navy text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all btn-clinical">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="max-w-4xl mx-auto w-full px-6 mt-6 animate-subtle">
+          {% for category, message in messages %}
+            <div class="p-4 rounded-2xl flex items-center gap-3 border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5">
+              <div class="w-2 h-2 rounded-full {% if category == 'success' %}bg-emerald-500{% else %}bg-blue-500{% endif %}"></div>
+              <span class="text-sm font-medium text-slate-700">{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Sophisticated Footer -->
+    <footer class="bg-white border-t border-slate-100 py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2 space-y-6">
+                    <span class="font-extrabold text-2xl tracking-tight text-clinical-navy">MedAI<span class="text-clinical-blue">+</span></span>
+                    <p class="text-slate-500 max-w-sm leading-relaxed text-sm">
+                        Standardizing healthcare assessment through verifiable AI diagnostic modelling. Professional tools for advanced patient awareness.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-clinical-navy transition"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-clinical-navy transition"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-clinical-navy mb-6 text-sm uppercase tracking-widest">Resources</h4>
+                    <ul class="space-y-4 text-sm font-medium text-slate-500">
+                        <li><a href="/blog" class="hover:text-clinical-blue transition">Medical Journal</a></li>
+                        <li><a href="/developer" class="hover:text-clinical-blue transition">API Documentation</a></li>
+                        <li><a href="/about" class="hover:text-clinical-blue transition">Our Methodology</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-clinical-navy mb-6 text-sm uppercase tracking-widest">Support</h4>
+                    <ul class="space-y-4 text-sm font-medium text-slate-500">
+                        <li><a href="/contact" class="hover:text-clinical-blue transition">Contact Clinician</a></li>
+                        <li><a href="#" class="hover:text-clinical-blue transition">Privacy Standards</a></li>
+                        <li><a href="#" class="hover:text-clinical-blue transition">Terms of Use</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-20 pt-8 border-t border-slate-50 text-center">
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">&copy; 2026 MedAI+ Professional Clinical Systems. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

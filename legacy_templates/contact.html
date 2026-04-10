@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12 px-4">
+  <div class="text-center mb-16">
+    <h1 class="text-4xl font-bold text-slate-900 mb-4">Get in Touch</h1>
+    <p class="text-xl text-slate-600">We'd love to hear from you. Here's how you can reach us.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <!-- Contact Info -->
+    <div class="space-y-8">
+      <div class="flex items-start gap-4">
+        <div
+          class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-xl flex-shrink-0">
+          <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Our Office</h3>
+          <p class="text-slate-600">123 Health Tech Avenue<br>Innovation District, Tech City 10001</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <div
+          class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 text-xl flex-shrink-0">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Email Us</h3>
+          <p class="text-slate-600">support@medaiplus.com<br>info@medaiplus.com</p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <div
+          class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 text-xl flex-shrink-0">
+          <i class="fas fa-phone-alt"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-2">Call Us</h3>
+          <p class="text-slate-600">+1 (555) 123-4567<br>Mon-Fri from 8am to 5pm</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form (Demo) -->
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
+      <h3 class="text-xl font-bold text-slate-900 mb-6">Send us a message</h3>
+      <form class="space-y-4" onsubmit="event.preventDefault(); alert('This is a demo form.');">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+          <input type="text" class="w-full rounded-lg border-slate-300 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Your name">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+          <input type="email" class="w-full rounded-lg border-slate-300 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="you@example.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Message</label>
+          <textarea rows="4" class="w-full rounded-lg border-slate-300 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="How can we help?"></textarea>
+        </div>
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">
+          Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
