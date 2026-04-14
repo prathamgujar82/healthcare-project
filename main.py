@@ -3,6 +3,21 @@ import numpy as np
 import pandas as pd
 import pickle
 import os
+import warnings
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
+
+# Suppress scikit-learn unpickle version warning
+warnings.filterwarnings("ignore", message="Trying to unpickle estimator.*")
+
+# Load environment variables
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+ai_client = None
+if GEMINI_API_KEY:
+    ai_client = genai.Client(api_key=GEMINI_API_KEY)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -131,11 +146,43 @@ def predict():
 def coming_soon():
     return render_template('coming_soon.html')
 
+@app.route('/medibot', methods=['GET', 'POST'])
+def medibot():
+    if request.method == 'GET':
+        return render_template('medibot.html')
+        
+    data = request.get_json()
+    if not data or 'message' not in data:
+        return jsonify({"error": "Empty message"}), 400
+        
+    message = data['message']
+    # Dynamically load the API key just in case it was updated
+    load_dotenv(override=True)
+    current_api_key = os.getenv("GEMINI_API_KEY")
+    if current_api_key:
+        current_api_key = current_api_key.strip() # Remove accidental spaces
+        
+    if not current_api_key:
+        return jsonify({"response": "System Notice: The MediBot AI assistant requires a Gemini API Key. Please configure `GEMINI_API_KEY` in the `.env` file of this project to enable intelligent responses."})
+        
+    try:
+        # Create client locally
+        local_client = genai.Client(api_key=current_api_key)
+        response = local_client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=message,
+            config=types.GenerateContentConfig(
+                system_instruction="You are MediBot, an advanced AI clinical assistant part of the MedAI+ platform. You should provide helpful, precise, and professional health information. Disclaimer: Always remind users that you are an AI and not a replacement for a doctor. Keep responses concise."
+            )
+        )
+        return jsonify({"response": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Redirect all "extra" features to Coming Soon
 @app.route('/login')
 @app.route('/register')
 @app.route('/dashboard')
-@app.route('/medibot')
 @app.route('/image-check')
 @app.route('/reports')
 @app.route('/history')
