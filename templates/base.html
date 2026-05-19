@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MedAI+ | Clinical Assessment System{% endblock %}</title>
+    <title>{% block title %}HealthsenseAI | Clinical Assessment System{% endblock %}</title>
     <!-- Premium Typography: Inter for UI, Playfair Display for Clinical Elegance -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -97,25 +97,37 @@
                     <i class="fas fa-notes-medical text-white text-lg"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-extrabold text-xl tracking-tight text-clinical-navy">MedAI<span class="text-clinical-blue">+</span></span>
-                    <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 -mt-1">Clinical Pro</span>
+                    <span class="font-extrabold text-xl tracking-tight text-clinical-navy">Healthsense<span class="text-clinical-blue">AI</span></span>
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 -mt-1">Clinical Engine</span>
                 </div>
             </a>
 
             <!-- Navigation -->
             <div class="hidden md:flex items-center gap-10">
-                <a href="/" class="nav-link text-sm font-semibold text-clinical-navy">Assessment</a>
-                <a href="/image-check" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Dermatology AI</a>
-                <a href="/medibot" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">MediBot</a>
+                {% if session.user_id %}
+                <a href="/dashboard" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Dashboard</a>
+                {% endif %}
+                <a href="/" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Assessment</a>
+                <a href="/tracker" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Wellness Tracker</a>
+                <a href="/appointments" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Appointments</a>
+                {% if session.user_id %}
                 <a href="/reports" class="nav-link text-sm font-semibold text-slate-500 hover:text-clinical-navy">Clinical Reports</a>
+                {% endif %}
             </div>
 
             <!-- CTA -->
             <div class="flex items-center gap-4">
+                {% if session.user_id %}
+                <span class="hidden sm:block text-sm font-bold text-slate-500"><i class="fas fa-user-md mr-1"></i> {{ session.user_name }}</span>
+                <a href="/logout" class="bg-clinical-navy text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all btn-clinical">
+                    Sign Out
+                </a>
+                {% else %}
                 <a href="/login" class="hidden sm:block text-sm font-bold text-slate-500 hover:text-clinical-navy transition">Sign In</a>
                 <a href="/register" class="bg-clinical-navy text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all btn-clinical">
                     Get Started
                 </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -144,7 +156,7 @@
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
                 <div class="col-span-1 md:col-span-2 space-y-6">
-                    <span class="font-extrabold text-2xl tracking-tight text-clinical-navy">MedAI<span class="text-clinical-blue">+</span></span>
+                    <span class="font-extrabold text-2xl tracking-tight text-clinical-navy">Healthsense<span class="text-clinical-blue">AI</span></span>
                     <p class="text-slate-500 max-w-sm leading-relaxed text-sm">
                         Standardizing healthcare assessment through verifiable AI diagnostic modelling. Professional tools for advanced patient awareness.
                     </p>
@@ -171,7 +183,7 @@
                 </div>
             </div>
             <div class="mt-20 pt-8 border-t border-slate-50 text-center">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">&copy; 2026 MedAI+ Professional Clinical Systems. All rights reserved.</p>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">&copy; 2026 HealthsenseAI Professional Clinical Systems. All rights reserved.</p>
             </div>
         </div>
     </footer>

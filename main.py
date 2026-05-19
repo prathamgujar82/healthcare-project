@@ -1,30 +1,32 @@
-from flask import Flask, request, render_template, jsonify, session
+from flask import Flask, request, render_template, jsonify, session, redirect, url_for, flash
 import numpy as np
 import pandas as pd
 import pickle
-import os
 import warnings
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+import os
+import uuid
+from datetime import date
+
+# Import local database helper
+import database as db
+
+# Initialize database
+db.init_db()
 
 # Suppress scikit-learn unpickle version warning
 warnings.filterwarnings("ignore", message="Trying to unpickle estimator.*")
 
 # Load environment variables
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-ai_client = None
-if GEMINI_API_KEY:
-    ai_client = genai.Client(api_key=GEMINI_API_KEY)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = "secret_key_for_session" # Needed if templates use session
+app.secret_key = "secret_key_for_session" # Secure secret key for session management
 
 # Load all necessary models and data
-# We'll use the SVC model which is more complete for these symptoms
 try:
     svc = pickle.load(open('data/svc.pkl', 'rb'))
     svc_loaded = True
@@ -98,7 +100,6 @@ def predict_disease(user_symptoms):
                     "probability": round(probabilities[i] * 100, 1)
                 })
         else:
-            # Fallback for models without probability support
             probs = [{"disease": disease, "probability": 100.0}]
     except:
         probs = [{"disease": disease, "probability": 100.0}]
@@ -115,22 +116,35 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     """Handle prediction request"""
-    # Check if we are receiving a list (from checkboxes) or a string (legacy)
     symptoms = request.form.getlist('symptoms')
     if not symptoms:
-        # Fallback for hidden input string
         symptoms_str = request.form.get('symptoms')
         if symptoms_str:
             symptoms = [s.strip() for s in symptoms_str.split(',')]
     
     if not symptoms:
-        return render_template('home.html', symptoms_list=list(symptoms_dict.keys()), message="Please select symptoms")
+        flash("Please select at least one symptom indicator.", "warning")
+        return redirect(url_for('index'))
     
     # Perform prediction
     disease, probabilities = predict_disease(symptoms)
     
     # Get details
     desc, pre, med, diet, wrk = get_details(disease)
+
+    # Save to history if user is authenticated
+    if session.get('user_id'):
+        db.save_diagnosis(
+            session['user_id'],
+            disease,
+            ",".join(symptoms),
+            probabilities[0]['probability'] if probabilities else 100.0,
+            desc,
+            ",".join(pre),
+            ",".join(med),
+            ",".join(diet),
+            ",".join(wrk)
+        )
 
     return render_template('results.html', 
                           predicted_disease=disease, 
@@ -142,55 +156,233 @@ def predict():
                           workout=wrk,
                           selected_symptoms=symptoms)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if session.get('user_id'):
+        return redirect(url_for('dashboard'))
+        
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        user = db.authenticate_user(email, password)
+        if user:
+            session['user_id'] = user['id']
+            session['user_name'] = user['name']
+            session['user_email'] = user['email']
+            flash("Welcome back, Dr. {}.".format(user['name']), "success")
+            return redirect(url_for('dashboard'))
+        else:
+            flash("Authentication failed. Please verify credentials.", "error")
+            
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if session.get('user_id'):
+        return redirect(url_for('dashboard'))
+        
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        success = db.register_user(name, email, password)
+        if success:
+            user = db.authenticate_user(email, password)
+            if user:
+                session['user_id'] = user['id']
+                session['user_name'] = user['name']
+                session['user_email'] = user['email']
+                flash("Workspace created successfully.", "success")
+                return redirect(url_for('dashboard'))
+        else:
+            flash("Registration failed. Email might already be registered.", "error")
+            
+    return render_template('register.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("Session terminated.", "success")
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+def dashboard():
+    if not session.get('user_id'):
+        flash("Please authenticate to access the Clinical Dashboard.", "warning")
+        return redirect(url_for('login'))
+        
+    user = db.get_user_by_id(session['user_id'])
+    diagnoses = db.get_user_diagnoses(session['user_id'])
+    stats = db.get_dashboard_stats(session['user_id'])
+    
+    return render_template('dashboard.html', user=user, diagnoses=diagnoses, stats=stats)
+
+# ============== Appointments Routes ==============
+
+@app.route('/appointments', methods=['GET'])
+def appointments():
+    if not session.get('user_id'):
+        flash("Please login to schedule appointments.", "warning")
+        return redirect(url_for('login'))
+        
+    user_appts = db.get_user_appointments(session['user_id'])
+    return render_template('appointments.html', appointments=user_appts)
+
+@app.route('/appointments/book', methods=['POST'])
+def book_appt():
+    if not session.get('user_id'):
+        flash("Please login to schedule appointments.", "warning")
+        return redirect(url_for('login'))
+        
+    doctor_name = request.form.get('doctor_name')
+    specialty = request.form.get('specialty')
+    appointment_date = request.form.get('appointment_date')
+    appointment_time = request.form.get('appointment_time')
+    reason = request.form.get('reason', '')
+    
+    if not doctor_name or not specialty or not appointment_date or not appointment_time:
+        flash("Missing booking details. Please verify your selection.", "error")
+        return redirect(url_for('appointments'))
+        
+    db.book_appointment(session['user_id'], doctor_name, specialty, appointment_date, appointment_time, reason)
+    flash(f"Appointment booked successfully with {doctor_name}.", "success")
+    return redirect(url_for('appointments'))
+
+@app.route('/appointments/cancel/<int:appt_id>', methods=['POST'])
+def cancel_appt(appt_id):
+    if not session.get('user_id'):
+        flash("Please login to cancel appointments.", "warning")
+        return redirect(url_for('login'))
+        
+    db.cancel_appointment(appt_id, session['user_id'])
+    flash("Appointment has been cancelled.", "success")
+    return redirect(url_for('appointments'))
+
+# ============== Diet & Exercise Tracker Routes ==============
+
+@app.route('/tracker', methods=['GET'])
+def tracker():
+    if not session.get('user_id'):
+        flash("Please login to access the Wellness Tracker.", "warning")
+        return redirect(url_for('login'))
+        
+    today_str = date.today().isoformat()
+    food_logs = db.get_food_logs(session['user_id'], today_str)
+    exercise_logs = db.get_exercise_logs(session['user_id'], today_str)
+    stats = db.get_dashboard_stats(session['user_id'])
+    
+    # Calculate macro totals
+    protein_tot = round(sum(f['protein'] for f in food_logs), 1)
+    carbs_tot = round(sum(f['carbs'] for f in food_logs), 1)
+    fat_tot = round(sum(f['fat'] for f in food_logs), 1)
+    
+    totals = {
+        "protein": protein_tot,
+        "carbs": carbs_tot,
+        "fat": fat_tot
+    }
+    
+    return render_template('tracker.html', 
+                           food_logs=food_logs, 
+                           exercise_logs=exercise_logs, 
+                           stats=stats, 
+                           totals=totals,
+                           today=date.today().strftime("%B %d, %Y"))
+
+@app.route('/tracker/food', methods=['POST'])
+def add_food():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+        
+    food_name = request.form.get('food_name')
+    meal_type = request.form.get('meal_type')
+    calories = request.form.get('calories')
+    protein = request.form.get('protein', 0)
+    carbs = request.form.get('carbs', 0)
+    fat = request.form.get('fat', 0)
+    
+    if not food_name or not meal_type or not calories:
+        flash("Please specify food name, meal type and calorie inputs.", "error")
+        return redirect(url_for('tracker'))
+        
+    today_str = date.today().isoformat()
+    db.log_food(session['user_id'], food_name, meal_type, calories, protein, carbs, fat, today_str)
+    flash(f"Logged meal item: {food_name}.", "success")
+    return redirect(url_for('tracker'))
+
+@app.route('/tracker/exercise', methods=['POST'])
+def add_exercise():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+        
+    activity = request.form.get('activity')
+    duration = request.form.get('duration')
+    calories_burned = request.form.get('calories_burned')
+    
+    if not activity or not duration or not calories_burned:
+        flash("Please specify activity details, duration and expenditure inputs.", "error")
+        return redirect(url_for('tracker'))
+        
+    today_str = date.today().isoformat()
+    db.log_exercise(session['user_id'], activity, duration, calories_burned, today_str)
+    flash(f"Logged workout: {activity}.", "success")
+    return redirect(url_for('tracker'))
+
+@app.route('/tracker/delete/food/<int:log_id>', methods=['POST'])
+def delete_food(log_id):
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+        
+    db.delete_food_log(log_id, session['user_id'])
+    flash("Meal record deleted.", "success")
+    return redirect(url_for('tracker'))
+
+@app.route('/tracker/delete/exercise/<int:log_id>', methods=['POST'])
+def delete_exercise(log_id):
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+        
+    db.delete_exercise_log(log_id, session['user_id'])
+    flash("Workout record deleted.", "success")
+    return redirect(url_for('tracker'))
+
+# ============== Standard Information Routes ==============
+
+@app.route('/reports')
+def reports():
+    if not session.get('user_id'):
+        flash("Authentication required to access Clinical Reports.", "warning")
+        return redirect(url_for('login'))
+        
+    diagnoses = db.get_user_diagnoses(session['user_id'])
+    appointments = db.get_user_appointments(session['user_id'])
+    
+    # We pass diagnostic reports and appointments list to reports template
+    return render_template('reports.html', diagnoses=diagnoses, appointments=appointments)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/blog')
+def blog():
+    return render_template('blog.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        flash("Thank you. Your inquiry has been logged in clinical queues.", "success")
+        return redirect(url_for('contact'))
+    return render_template('contact.html')
+
+@app.route('/developer')
+def developer():
+    return render_template('developer.html')
+
 @app.route('/coming-soon')
 def coming_soon():
-    return render_template('coming_soon.html')
-
-@app.route('/medibot', methods=['GET', 'POST'])
-def medibot():
-    if request.method == 'GET':
-        return render_template('medibot.html')
-        
-    data = request.get_json()
-    if not data or 'message' not in data:
-        return jsonify({"error": "Empty message"}), 400
-        
-    message = data['message']
-    # Dynamically load the API key just in case it was updated
-    load_dotenv(override=True)
-    current_api_key = os.getenv("GEMINI_API_KEY")
-    if current_api_key:
-        current_api_key = current_api_key.strip() # Remove accidental spaces
-        
-    if not current_api_key:
-        return jsonify({"response": "System Notice: The MediBot AI assistant requires a Gemini API Key. Please configure `GEMINI_API_KEY` in the `.env` file of this project to enable intelligent responses."})
-        
-    try:
-        # Create client locally
-        local_client = genai.Client(api_key=current_api_key)
-        response = local_client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=message,
-            config=types.GenerateContentConfig(
-                system_instruction="You are MediBot, an advanced AI clinical assistant part of the MedAI+ platform. You should provide helpful, precise, and professional health information. Disclaimer: Always remind users that you are an AI and not a replacement for a doctor. Keep responses concise."
-            )
-        )
-        return jsonify({"response": response.text})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-# Redirect all "extra" features to Coming Soon
-@app.route('/login')
-@app.route('/register')
-@app.route('/dashboard')
-@app.route('/image-check')
-@app.route('/reports')
-@app.route('/history')
-@app.route('/about')
-@app.route('/blog')
-@app.route('/contact')
-@app.route('/developer')
-def redirect_to_coming_soon():
     return render_template('coming_soon.html')
 
 if __name__ == '__main__':

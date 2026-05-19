@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Diet & Exercise Tracker | HealthsenseAI{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen pb-32">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-100 py-16 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Wellness Instrumentation</span>
+                <h1 class="text-4xl font-extrabold text-clinical-navy tracking-tight font-sans">
+                    Diet & Exercise <span class="text-clinical-blue">Tracker</span>
+                </h1>
+                <p class="text-sm text-slate-500">Track metabolic calorie inputs, macro structures, and exercise expenditures.</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <i class="far fa-calendar-check text-slate-400"></i>
+                <span class="text-sm font-bold text-clinical-navy">{{ today }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="max-w-7xl mx-auto px-6 py-12 space-y-10">
+        <!-- Calorie Rings / Instrumentation Dashboard -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Summary ring card -->
+            <div class="card-clinical bg-white p-8 flex flex-col items-center justify-center text-center space-y-4">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Net Balance Kcal</span>
+                
+                <!-- Circular Ring Visual (SVG) -->
+                <div class="relative w-36 h-36 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="72" cy="72" r="60" stroke="#F1F5F9" stroke-width="12" fill="transparent" />
+                        <circle cx="72" cy="72" r="60" stroke="#2563EB" stroke-width="12" fill="transparent" 
+                                stroke-dasharray="377" 
+                                stroke-dashoffset="{{ 377 - (377 * (stats.today_net | default(0)) / 2000) if (stats.today_net | default(0)) < 2000 else 0 }}" />
+                    </svg>
+                    <div class="absolute flex flex-col items-center">
+                        <span class="text-2xl font-black text-clinical-navy">{{ stats.today_net }}</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">/ 2000 Kcal</span>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-slate-400 font-semibold">Daily goal: 2000 Kcal limit</p>
+            </div>
+
+            <!-- Stats Breakdowns (consumed, burned, target) -->
+            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Consumed -->
+                <div class="card-clinical bg-white p-8 flex items-center justify-between">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Consumed</span>
+                        <h3 class="text-3xl font-black text-clinical-navy">{{ stats.today_consumed }} <span class="text-sm text-slate-400 font-bold">kcal</span></h3>
+                        <p class="text-xs text-emerald-600 font-bold"><i class="fas fa-arrow-down-long"></i> Nutritional Input</p>
+                    </div>
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-sm">
+                        <i class="fas fa-bowl-food"></i>
+                    </div>
+                </div>
+
+                <!-- Burned -->
+                <div class="card-clinical bg-white p-8 flex items-center justify-between">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Calories Burned</span>
+                        <h3 class="text-3xl font-black text-clinical-navy">{{ stats.today_burned }} <span class="text-sm text-slate-400 font-bold">kcal</span></h3>
+                        <p class="text-xs text-rose-500 font-bold"><i class="fas fa-arrow-up-long"></i> Active Expenditure</p>
+                    </div>
+                    <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-xl shadow-sm">
+                        <i class="fas fa-person-running"></i>
+                    </div>
+                </div>
+
+                <!-- Macros percentages -->
+                <div class="card-clinical bg-white p-8 space-y-6">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Macros Tracked</span>
+                    <div class="space-y-3">
+                        <!-- Protein -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-black uppercase tracking-wider">
+                                <span class="text-slate-500">Protein</span>
+                                <span class="text-clinical-blue">{{ totals.protein }}g / 130g</span>
+                            </div>
+                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
+                                <div class="h-full bg-clinical-blue rounded-full transition-all" style="width: {{ (totals.protein / 130 * 100) if totals.protein < 130 else 100 }}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Carbs -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-black uppercase tracking-wider">
+                                <span class="text-slate-500">Carbohydrates</span>
+                                <span class="text-amber-600">{{ totals.carbs }}g / 250g</span>
+                            </div>
+                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
+                                <div class="h-full bg-amber-500 rounded-full transition-all" style="width: {{ (totals.carbs / 250 * 100) if totals.carbs < 250 else 100 }}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Fat -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-black uppercase tracking-wider">
+                                <span class="text-slate-500">Fats</span>
+                                <span class="text-purple-600">{{ totals.fat }}g / 65g</span>
+                            </div>
+                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
+                                <div class="h-full bg-purple-500 rounded-full transition-all" style="width: {{ (totals.fat / 65 * 100) if totals.fat < 65 else 100 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logging Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Food Section -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-clinical-navy uppercase tracking-widest flex items-center gap-2">
+                        <i class="fas fa-utensils text-slate-400"></i> Nutrition Logger
+                    </h3>
+                </div>
+
+                <div class="card-clinical bg-white p-6 space-y-6">
+                    <form action="/tracker/food" method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2 space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Food Item Name</label>
+                            <input type="text" name="food_name" required placeholder="E.g., Grilled Chicken Salad"
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Meal Type</label>
+                            <select name="meal_type" required
+                                    class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold appearance-none">
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Calories (Kcal)</label>
+                            <input type="number" name="calories" required placeholder="350" min="0"
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Protein (g)</label>
+                            <input type="number" step="0.1" name="protein" required placeholder="25.5" min="0"
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Carbohydrates (g)</label>
+                            <input type="number" step="0.1" name="carbs" required placeholder="12.0" min="0"
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                        </div>
+
+                        <div class="space-y-1 sm:col-span-2">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fat (g)</label>
+                            <input type="number" step="0.1" name="fat" required placeholder="8.0" min="0"
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                        </div>
+
+                        <button type="submit" class="sm:col-span-2 py-3.5 bg-clinical-navy text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition active:scale-98">
+                            Add Nutrition Log
+                        </button>
+                    </form>
+
+                    <!-- Food logs display list -->
+                    <div class="border-t border-slate-100 pt-6 space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scroll">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Today's Meal Records</span>
+                        {% if food_logs %}
+                            {% for item in food_logs %}
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                                <div>
+                                    <h4 class="font-extrabold text-slate-800">{{ item.food_name }}</h4>
+                                    <p class="text-[10px] text-slate-400">{{ item.meal_type }} • P: {{ item.protein }}g | C: {{ item.carbs }}g | F: {{ item.fat }}g</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="font-black text-clinical-navy">{{ item.calories }} Kcal</span>
+                                    <form action="/tracker/delete/food/{{ item.id }}" method="POST">
+                                        <button type="submit" onclick="return confirm('Delete food log?')" class="text-rose-500 hover:text-rose-700">
+                                            <i class="far fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center text-xs text-slate-400 py-4">No meal records registered today.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercise Section -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-clinical-navy uppercase tracking-widest flex items-center gap-2">
+                        <i class="fas fa-person-running text-slate-400"></i> Activity Expenditure
+                    </h3>
+                </div>
+
+                <div class="card-clinical bg-white p-6 space-y-6">
+                    <form action="/tracker/exercise" method="POST" class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Exercise Activity</label>
+                            <input type="text" name="activity" required placeholder="E.g., Running on Treadmill, Swimming"
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Duration (min)</label>
+                                <input type="number" name="duration" required placeholder="30" min="1"
+                                       class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kcal Burned</label>
+                                <input type="number" name="calories_burned" required placeholder="280" min="0"
+                                       class="w-full bg-slate-50/50 border border-slate-200 rounded-xl py-3 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue text-sm font-semibold">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 bg-clinical-navy text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition active:scale-98">
+                            Add Expenditure Log
+                        </button>
+                    </form>
+
+                    <!-- Exercise logs display list -->
+                    <div class="border-t border-slate-100 pt-6 space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scroll">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Today's Workout Records</span>
+                        {% if exercise_logs %}
+                            {% for item in exercise_logs %}
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                                <div>
+                                    <h4 class="font-extrabold text-slate-800">{{ item.activity }}</h4>
+                                    <p class="text-[10px] text-slate-400"><i class="far fa-clock"></i> {{ item.duration }} mins</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="font-black text-rose-500">-{{ item.calories_burned }} Kcal</span>
+                                    <form action="/tracker/delete/exercise/{{ item.id }}" method="POST">
+                                        <button type="submit" onclick="return confirm('Delete exercise log?')" class="text-rose-500 hover:text-rose-700">
+                                            <i class="far fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center text-xs text-slate-400 py-4">No workout records registered today.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

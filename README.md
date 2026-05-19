@@ -1,6 +1,6 @@
-# MedAI+ | Healthcare Assessment System
+# HealthsenseAI | Healthcare Assessment & Wellness System
 
-This guide explains how to set up and run the **MedAI+ Professional Clinical Assessment System** on a new computer.
+This guide explains how to set up and run the **HealthsenseAI Professional Clinical Assessment System** on a new computer.
 
 ## 1. Prerequisites
 Ensure you have **Python 3.10 or higher** installed on your system.
@@ -41,20 +41,20 @@ pip install -r requirements.txt
 ```
 
 ## 3. Running the Application
-Once the installation is complete, you can start the clinical assessment system:
+Once the installation is complete, you can start the application:
 
 ```powershell
-python new_main.py
+python main.py
 ```
 
 ### Accessing the Web Interface
-1. Once the terminal says `Serving Flask app 'new_main'`, open your browser.
+1. Once the terminal says `Serving Flask app 'main'`, open your browser.
 2. Go to: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 ---
 
-## 🔬 Project Files
-- **`new_main.py`**: The primary file to run the AI Diagnosis system.
-- **`app.py`**: The full version (includes legacy Login/Database features).
-- **`requirements.txt`**: Contains all necessary libraries (Flask, Scikit-learn, Pandas, etc.).
-- **`svc.pkl`**: The trained AI model.
+## 🔬 Project Architecture
+* **`main.py`**: The primary Flask application entry point with authentication, appointments booking, and calorie tracker routes.
+* **`database.py`**: SQLite database controller handling profiles, diagnosis history logs, and calorie summaries.
+* **`requirements.txt`**: Contains all necessary libraries (Flask, Scikit-learn, Pandas, etc.).
+* **`data/`**: Directory containing database schemas (`database.db`), Trained SVM Classifier model (`svc.pkl`), and diagnostic details datasets (descriptions, precautions, medications, workouts).

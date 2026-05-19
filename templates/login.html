@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | HealthsenseAI{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center bg-slate-50 py-12 px-6">
+    <div class="max-w-md w-full space-y-8 animate-subtle">
+        <!-- Brand Header -->
+        <div class="text-center space-y-2">
+            <div class="inline-flex w-16 h-16 bg-clinical-navy rounded-2xl items-center justify-center shadow-lg shadow-slate-200 mx-auto">
+                <i class="fas fa-user-md text-white text-2xl"></i>
+            </div>
+            <h2 class="text-4xl font-extrabold text-clinical-navy tracking-tight">Welcome Back</h2>
+            <p class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Access your Clinical Workspace</p>
+        </div>
+
+        <!-- Card Container -->
+        <div class="card-clinical bg-white p-8 md:p-10 space-y-6">
+            <form action="/login" method="POST" class="space-y-6">
+                <!-- Email Field -->
+                <div class="space-y-2">
+                    <label for="email" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Email Address</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="email" name="email" required placeholder="name@clinic.com"
+                               class="w-full bg-white border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-clinical-navy placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue transition text-sm font-semibold">
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label for="password" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Password</label>
+                        <a href="#" class="text-xs font-bold text-clinical-blue hover:underline">Forgot?</a>
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" id="password" name="password" required placeholder="••••••••"
+                               class="w-full bg-white border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-clinical-navy placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue transition text-sm font-semibold">
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center">
+                    <label class="relative flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" name="remember" class="peer hidden">
+                        <div class="w-5 h-5 rounded-md border-2 border-slate-200 bg-white peer-checked:bg-clinical-blue peer-checked:border-clinical-blue transition flex items-center justify-center">
+                            <i class="fas fa-check text-[8px] text-white opacity-0 peer-checked:opacity-100 transition"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500">Keep me logged in for 30 days</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                        class="w-full py-4 rounded-xl bg-clinical-navy text-white font-bold hover:bg-slate-800 shadow-xl shadow-slate-200 transition active:scale-98 flex items-center justify-center gap-2">
+                    Authenticate
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+
+            <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-slate-100"></div>
+                <span class="flex-shrink mx-4 text-xs font-bold text-slate-300 uppercase tracking-widest">New to Platform</span>
+                <div class="flex-grow border-t border-slate-100"></div>
+            </div>
+
+            <!-- Alternative CTA -->
+            <a href="/register" class="w-full py-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-center block hover:bg-slate-50 transition text-sm">
+                Create Clinical Account
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment | HealthsenseAI{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen pb-32">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-100 py-16 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Medical Administration</span>
+                <h1 class="text-4xl font-extrabold text-clinical-navy tracking-tight font-sans">
+                    Doctor <span class="text-clinical-blue">Appointments</span>
+                </h1>
+                <p class="text-sm text-slate-500">Book clinical consults with board-certified physicians and specialists.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Booking Module (takes 2 columns) -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Select a Doctor Cards -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-clinical-navy uppercase tracking-widest flex items-center gap-2">
+                        <i class="fas fa-user-doctor text-slate-400"></i> Available Clinicians
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Doctor 1 -->
+                        <div class="card-clinical bg-white p-6 flex gap-4 cursor-pointer hover:border-clinical-blue transition border-2 border-transparent selected-doc-card" 
+                             onclick="selectDoctor('Dr. Sarah Jenkins', 'Cardiologist')" id="doc-Sarah">
+                            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-clinical-blue flex items-center justify-center text-xl shrink-0">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h4 class="font-extrabold text-slate-800 text-sm">Dr. Sarah Jenkins</h4>
+                                <p class="text-xs font-bold text-clinical-blue">Cardiologist</p>
+                                <p class="text-[10px] text-slate-400"><i class="far fa-clock"></i> Mon, Wed, Fri (9am - 4pm)</p>
+                            </div>
+                        </div>
+
+                        <!-- Doctor 2 -->
+                        <div class="card-clinical bg-white p-6 flex gap-4 cursor-pointer hover:border-clinical-blue transition border-2 border-transparent selected-doc-card" 
+                             onclick="selectDoctor('Dr. Marcus Vance', 'Dermatologist')" id="doc-Marcus">
+                            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shrink-0">
+                                <i class="fas fa-hand-holding-medical"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h4 class="font-extrabold text-slate-800 text-sm">Dr. Marcus Vance</h4>
+                                <p class="text-xs font-bold text-purple-600">Dermatologist</p>
+                                <p class="text-[10px] text-slate-400"><i class="far fa-clock"></i> Tue, Thu (10am - 5pm)</p>
+                            </div>
+                        </div>
+
+                        <!-- Doctor 3 -->
+                        <div class="card-clinical bg-white p-6 flex gap-4 cursor-pointer hover:border-clinical-blue transition border-2 border-transparent selected-doc-card" 
+                             onclick="selectDoctor('Dr. Elena Rostova', 'Neurologist')" id="doc-Elena">
+                            <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl shrink-0">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h4 class="font-extrabold text-slate-800 text-sm">Dr. Elena Rostova</h4>
+                                <p class="text-xs font-bold text-rose-600">Neurologist</p>
+                                <p class="text-[10px] text-slate-400"><i class="far fa-clock"></i> Mon, Tue, Thu (1pm - 6pm)</p>
+                            </div>
+                        </div>
+
+                        <!-- Doctor 4 -->
+                        <div class="card-clinical bg-white p-6 flex gap-4 cursor-pointer hover:border-clinical-blue transition border-2 border-transparent selected-doc-card" 
+                             onclick="selectDoctor('Dr. Rajan Patel', 'General Physician')" id="doc-Rajan">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                                <i class="fas fa-house-chimney-medical"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h4 class="font-extrabold text-slate-800 text-sm">Dr. Rajan Patel</h4>
+                                <p class="text-xs font-bold text-amber-600">General Physician</p>
+                                <p class="text-[10px] text-slate-400"><i class="far fa-clock"></i> Daily (8am - 12pm)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking form -->
+                <div class="card-clinical bg-white p-8 md:p-10">
+                    <form action="/appointments/book" method="POST" class="space-y-6">
+                        <input type="hidden" name="doctor_name" id="hidden_doc_name" required>
+                        <input type="hidden" name="specialty" id="hidden_doc_spec" required>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Appointment Date -->
+                            <div class="space-y-2">
+                                <label for="appt_date" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Select Date</label>
+                                <div class="relative">
+                                    <i class="far fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                    <input type="date" id="appt_date" name="appointment_date" required
+                                           class="w-full bg-white border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue transition text-sm font-semibold">
+                                </div>
+                            </div>
+
+                            <!-- Appointment Time Slot -->
+                            <div class="space-y-2">
+                                <label for="appt_time" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Select Time Slot</label>
+                                <div class="relative">
+                                    <i class="far fa-clock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                    <select id="appt_time" name="appointment_time" required
+                                            class="w-full bg-white border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue transition text-sm font-semibold appearance-none">
+                                        <option value="" disabled selected>Select Slot</option>
+                                        <option value="09:00 AM">09:00 AM</option>
+                                        <option value="10:30 AM">10:30 AM</option>
+                                        <option value="11:45 AM">11:45 AM</option>
+                                        <option value="02:00 PM">02:00 PM</option>
+                                        <option value="03:30 PM">03:30 PM</option>
+                                        <option value="04:45 PM">04:45 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reason / Symptoms description -->
+                        <div class="space-y-2">
+                            <label for="reason" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Reason for Consultation</label>
+                            <textarea id="reason" name="reason" rows="3" placeholder="Brief description of clinical symptoms or inquiry details..."
+                                      class="w-full bg-white border border-slate-200 rounded-xl py-4 px-4 text-clinical-navy focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-clinical-blue transition text-sm font-semibold resize-none"></textarea>
+                        </div>
+
+                        <!-- Booking Status Display / Select Notice -->
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            <div>Selected Doctor: <span id="selected_doc_label" class="text-clinical-navy text-sm font-black ml-1">None Selected</span></div>
+                        </div>
+
+                        <button type="submit" id="bookBtn" disabled
+                                class="w-full py-4 rounded-xl bg-clinical-navy text-white font-bold hover:bg-slate-800 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed shadow-xl shadow-slate-200 transition active:scale-98 flex items-center justify-center gap-2">
+                            <i class="far fa-calendar-check"></i>
+                            Schedule Appointment
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Appointments Log sidebar (1 column) -->
+            <div class="space-y-6">
+                <h3 class="text-lg font-bold text-clinical-navy uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-list text-slate-400"></i> Scheduled Consults
+                </h3>
+
+                <div class="space-y-4 max-h-[600px] overflow-y-auto pr-1 custom-scroll">
+                    {% if appointments %}
+                        {% for appt in appointments %}
+                        <div class="card-clinical bg-white p-5 space-y-4 border-l-4 {% if appt.status == 'Cancelled' %}border-slate-300{% else %}border-clinical-blue{% endif %} relative">
+                            {% if appt.status == 'Scheduled' %}
+                            <form action="/appointments/cancel/{{ appt.id }}" method="POST" class="absolute top-4 right-4">
+                                <button type="submit" onclick="return confirm('Cancel this appointment?')" class="text-rose-500 hover:text-rose-700 text-xs font-bold" title="Cancel Appointment">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            <div class="space-y-1">
+                                <h4 class="font-extrabold text-slate-800 text-sm">{{ appt.doctor_name }}</h4>
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold">{{ appt.specialty }}</span>
+                            </div>
+
+                            <div class="space-y-1 text-xs text-slate-400 font-semibold">
+                                <p><i class="far fa-calendar mr-1"></i> {{ appt.appointment_date }}</p>
+                                <p><i class="far fa-clock mr-1"></i> {{ appt.appointment_time }}</p>
+                                {% if appt.reason %}
+                                <p class="text-slate-500 italic mt-1 font-medium">"{{ appt.reason }}"</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
+                                <span>Status:</span>
+                                <span class="{% if appt.status == 'Cancelled' %}text-rose-500{% else %}text-emerald-600{% endif %}">{{ appt.status }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="card-clinical bg-white p-8 text-center space-y-3">
+                            <i class="far fa-calendar-times text-2xl text-slate-300"></i>
+                            <p class="text-xs text-slate-400">No scheduled appointments found.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ensure Date picker cannot select past dates
+    const dateInput = document.getElementById('appt_date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+    }
+
+    function selectDoctor(docName, specialty) {
+        // Update hidden form fields
+        document.getElementById('hidden_doc_name').value = docName;
+        document.getElementById('hidden_doc_spec').value = specialty;
+        
+        // Update UI display
+        document.getElementById('selected_doc_label').innerText = `${docName} (${specialty})`;
+        document.getElementById('bookBtn').disabled = false;
+        
+        // Update selection borders on doctor cards
+        document.querySelectorAll('.selected-doc-card').forEach(card => {
+            card.classList.remove('border-clinical-blue');
+        });
+        
+        // Add border to selected card
+        const firstName = docName.split(' ')[1];
+        const selectedCard = document.getElementById(`doc-${firstName}`);
+        if (selectedCard) {
+            selectedCard.classList.add('border-clinical-blue');
+        }
+    }
+</script>
+{% endblock %}

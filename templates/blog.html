@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Journal & Research | HealthsenseAI{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen pb-32">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-100 py-16 px-6">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+            <h1 class="text-4xl font-extrabold text-clinical-navy tracking-tight">Medical Journal & <span class="text-clinical-blue">Research</span></h1>
+            <p class="text-base text-slate-500 max-w-xl mx-auto">Stay updated with research findings on clinical AI models, computer vision pathology, and medical triage safety.</p>
+        </div>
+    </div>
+
+    <!-- Articles -->
+    <div class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <!-- Post 1 -->
+        <article class="card-clinical bg-white p-8 md:p-10 space-y-6">
+            <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span>Computer Vision</span>
+                <span>•</span>
+                <span>May 15, 2026</span>
+            </div>
+            
+            <div class="space-y-3">
+                <h3 class="text-2xl font-black text-clinical-navy hover:text-clinical-blue transition cursor-pointer">
+                    High-Fidelity Dermatological Classification Using Generative Multimodal Transformers
+                </h3>
+                <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                    This paper reviews the performance indices of vision-language architectures when evaluating dermal rashes and lesions. We contrast zero-shot classifications against trained pathology networks, noting accuracy boundaries and guidelines for clinical prompts.
+                </p>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                <span class="text-xs font-bold text-slate-400">Read time: 6 min</span>
+                <a href="#" class="text-xs font-bold text-clinical-blue hover:underline">Read Research Paper <i class="fas fa-chevron-right text-[10px]"></i></a>
+            </div>
+        </article>
+
+        <!-- Post 2 -->
+        <article class="card-clinical bg-white p-8 md:p-10 space-y-6">
+            <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span>Model Calibration</span>
+                <span>•</span>
+                <span>April 28, 2026</span>
+            </div>
+            
+            <div class="space-y-3">
+                <h3 class="text-2xl font-black text-clinical-navy hover:text-clinical-blue transition cursor-pointer">
+                    Balancing Precision and Sensitivity in Disease Indicator Match Models
+                </h3>
+                <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                    Analyzing support vector models (SVM) for symptom mapping. We discuss weight optimization strategies to limit false negatives while preserving model transparency in multi-label symptom diagnostics.
+                </p>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-50 pt-6">
+                <span class="text-xs font-bold text-slate-400">Read time: 10 min</span>
+                <a href="#" class="text-xs font-bold text-clinical-blue hover:underline">Read Research Paper <i class="fas fa-chevron-right text-[10px]"></i></a>
+            </div>
+        </article>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}About Our Methodology | HealthsenseAI{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen pb-32">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-100 py-20 px-6">
+        <div class="max-w-4xl mx-auto text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-clinical-navy tracking-tight">Our Scientific <span class="text-clinical-blue">Methodology</span></h1>
+            <p class="text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                HealthsenseAI leverages advanced clinical classification models and wellness analytics to support daily health assessments.
+            </p>
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="max-w-4xl mx-auto px-6 py-16 space-y-16">
+        <!-- Dual Architecture -->
+        <div class="card-clinical bg-white p-8 md:p-12 space-y-8">
+            <h2 class="text-2xl font-bold text-clinical-navy">Dual-Layer Health Assistance</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-clinical-blue flex items-center justify-center text-lg">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-clinical-navy">Layer 1: Symptom Classification</h3>
+                    <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                        Uses a trained Support Vector Classifier (SVC) tuned to identify 41 distinct pathologies from a network of 132 physiological indicator parameters. Our model assesses symptom co-occurrence weights to verify match reliability.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                        <i class="fas fa-heart-pulse"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-clinical-navy">Layer 2: Wellness Tracker</h3>
+                    <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                        Monitors metabolic calorie balances and macronutrient distributions (protein, carbohydrates, fats) based on dietary logs and workout expenditures. Ensures patients meet physical fitness and nutritional guidelines.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Guidelines & Disclaimer -->
+        <div class="card-clinical bg-clinical-navy text-white p-8 md:p-12 space-y-6 relative overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl"></div>
+            <div class="space-y-4 relative">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-circle-exclamation text-amber-400"></i> Clinical Triage Disclaimer
+                </h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    HealthsenseAI is developed as a pre-clinical awareness tool. It is engineered to support patient awareness and preliminary clinical classification. It is not an active substitute for primary care medical diagnosis, lab tests, pathology reviews, or direct consultations with licensed practitioners.
+                </p>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">
+                    HIPAA Compliance & Ethics standards adhered to.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

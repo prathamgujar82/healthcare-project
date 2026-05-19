@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Developer API Portal | HealthsenseAI{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 min-h-screen pb-32">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-100 py-16 px-6">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+            <h1 class="text-4xl font-extrabold text-clinical-navy tracking-tight">Developer <span class="text-clinical-blue">API Portal</span></h1>
+            <p class="text-base text-slate-500 max-w-xl mx-auto">Standardize clinic integrations. Programmatically trigger symptom assessments and manage appointments.</p>
+        </div>
+    </div>
+
+    <!-- API Spec -->
+    <div class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        <div class="card-clinical bg-white p-8 md:p-12 space-y-8">
+            <h2 class="text-2xl font-bold text-clinical-navy">Assessment API Spec</h2>
+
+            <!-- Endpoint 1 -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-black">POST</span>
+                    <code class="text-xs font-bold text-clinical-navy">/api/v1/assess</code>
+                </div>
+                
+                <p class="text-xs text-slate-500 font-semibold leading-relaxed">
+                    Submit a list of biological indicators to match against the trained classifier network.
+                </p>
+
+                <!-- Code Block -->
+                <div class="bg-slate-900 rounded-2xl p-6 text-slate-300 text-xs font-mono overflow-x-auto">
+                    <p class="text-slate-500">// Request Payload</p>
+                    <p>{</p>
+                    <p class="pl-4">"symptoms": ["itching", "skin_rash", "fatigue"]</p>
+                    <p>}</p>
+                    <br>
+                    <p class="text-slate-500">// Response Payload</p>
+                    <p>{</p>
+                    <p class="pl-4">"disease": "Fungal infection",</p>
+                    <p class="pl-4">"confidence": 92.4,</p>
+                    <p class="pl-4">"recommendations": ["Avoid scratching", "Keep area clean"]</p>
+                    <p>}</p>
+                </div>
+            </div>
+
+            <!-- Endpoint 2 -->
+            <div class="space-y-4 border-t border-slate-100 pt-8">
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-black">POST</span>
+                    <code class="text-xs font-bold text-clinical-navy">/api/v1/book</code>
+                </div>
+                
+                <p class="text-xs text-slate-500 font-semibold leading-relaxed">
+                    Reserve a doctor consultation slot programmatically.
+                </p>
+
+                <div class="bg-slate-900 rounded-2xl p-6 text-slate-300 text-xs font-mono overflow-x-auto">
+                    <p class="text-slate-500">// Request Payload</p>
+                    <p>{</p>
+                    <p class="pl-4">"doctor_name": "Dr. Sarah Jenkins",</p>
+                    <p class="pl-4">"specialty": "Cardiologist",</p>
+                    <p class="pl-4">"appointment_date": "2026-06-15",</p>
+                    <p class="pl-4">"appointment_time": "10:30 AM",</p>
+                    <p class="pl-4">"reason": "Routine cardiovascular inspection"</p>
+                    <p>}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,20 @@
-.env
-.venv/
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Database files
+*.db
+*.sqlite
+
+# Secrets
+.env
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Upload folders
+static/uploads/*
+!static/uploads/.gitkeep
